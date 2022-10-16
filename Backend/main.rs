@@ -11,12 +11,12 @@ fn main() {
     let config = CircuitConfig::standard_recursion_config();
     let mut builder = CircuitBuilder::<F, 2>::new(config.clone());
 
-    // build circuit, a + b = d 
-    // a = 2, b = 3, d = 5
-    let a_t = builder.add_virtual_target();
-    let b_t = builder.add_virtual_target();
+    // build circuit, a - b = d 
+    // a = 3, b = 3, d = 0
+    let user_t = builder.add_virtual_target();
+    let verifier_t = builder.add_virtual_target();
 
-    let lhs_t = builder.add(a_t, b_t);
+    let lhs_t = builder.sub(user_t, verifier_t);
 
     let d_t = builder.add_virtual_target();
     builder.connect(lhs_t, d_t);
@@ -24,9 +24,9 @@ fn main() {
 
     // assign witness data
     let mut pw = PartialWitness::<F>::new();
-    pw.set_target(a_t, GoldilocksField(2));
-    pw.set_target(b_t, GoldilocksField(3));
-    pw.set_target(d_t, GoldilocksField(5));
+    pw.set_target(user_t, GoldilocksField(3));
+    pw.set_target(verifier_t, GoldilocksField(3));
+    pw.set_target(d_t, GoldilocksField(0));
 
     //proof 
     let proof = data.prove(pw).unwrap();
